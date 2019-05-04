@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/relative_dialog"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#09000000">
+    <!--三个按钮  -->
+
+    <LinearLayout
+        android:id="@+id/addpic_bot_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#fff"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/layout_btn_two"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20px"
+            android:layout_marginRight="20px"
+            android:orientation="vertical"
+            >
+
+            <Button
+                android:id="@+id/addpic_bot_btn1"
+                android:layout_width="match_parent"
+                android:layout_height="99px"
+                android:background="@null"
+                android:gravity="center"
+                android:text="从相册"
+                android:textColor="#000"
+                android:textSize="45px"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="#bebebe"
+                />
+
+            <Button
+                android:id="@+id/addpic_bot_btn2"
+                android:layout_width="match_parent"
+                android:layout_height="99px"
+                android:layout_marginTop="1dp"
+                android:background="@null"
+                android:gravity="center"
+                android:text="从相机"
+                android:textColor="#000"
+                android:textSize="45px"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="#bebebe"
+            />
+
+        <Button
+            android:id="@+id/addpic_bot_btn3"
+            android:layout_width="match_parent"
+            android:layout_height="99px"
+            android:layout_marginBottom="20px"
+            android:layout_marginLeft="20px"
+            android:layout_marginRight="20px"
+            android:layout_marginTop="17px"
+            android:background="#fff"
+            android:gravity="center"
+            android:text="取消"
+            android:textColor="#000"
+            android:textSize="45px"/>
+
+    </LinearLayout>
+</RelativeLayout>

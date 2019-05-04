@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/root"
+    tools:context="com.fk.mycollection.UI.SimpleDateSelectActivity">
+
+    <TextView
+        android:id="@+id/tv_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2017-02-02"
+        app:layout_constraintBottom_toBottomOf="@+id/root"
+        app:layout_constraintLeft_toLeftOf="@+id/root"
+        app:layout_constraintRight_toRightOf="@+id/root"
+        app:layout_constraintTop_toTopOf="@+id/root"/>
+
+    <TextView
+        android:id="@+id/tv_datetime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2017-02-02 10:12"
+        app:layout_constraintBottom_toBottomOf="@+id/root"
+        app:layout_constraintLeft_toLeftOf="@+id/root"
+        app:layout_constraintRight_toRightOf="@+id/root"
+        app:layout_constraintTop_toTopOf="@+id/tv_date"/>
+</android.support.constraint.ConstraintLayout>

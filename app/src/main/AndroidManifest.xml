@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.fk.mycollection">
+
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+
+        </activity>
+        <activity android:name=".UI.GlideProgressActivity"/>
+        <activity android:name=".UI.RuntimePermissionActivity"/>
+        <activity android:name=".UI.ScrollListViewActivity">
+        </activity>
+        <activity android:name=".UI.DownloadProgressActivity">
+        </activity>
+        <activity android:name=".UI.BitmapGestureActivity">
+        </activity>
+        <activity android:name=".UI.BannerActivity">
+        </activity>
+        <activity android:name=".UI.SimpleDateSelectActivity">
+        </activity>
+        <activity android:name=".UI.ProgressWebViewActivity">
+        </activity>
+        <activity android:name=".UI.PopupWindowActivity">
+        </activity>
+        <activity android:name=".UI.MutiPhotoSelectActivity">
+        </activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.fk.mycollection.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_path"/>
+        </provider>
+
+        <activity android:name=".UI.TabActivity">
+        </activity>
+        <activity android:name=".UI.RatingBarActivity">
+        </activity>
+        <activity
+            android:name=".UI.DrawerActivity"
+            android:label="@string/title_activity_drawer"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".UI.CustomViewActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>
