@@ -1,16 +1,22 @@
 package com.fk.mycollection.utill;
 
-import android.app.Activity;
+import android.annotation.TargetApi;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -28,16 +34,13 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-//import org.kobjects.base64.Base64;
+import java.util.regex.PatternSyntaxException;
 
 public class CommonTools {
+
 
     // 最大显示时间长度
     private static final int TIME_LENGTH_MAX = 16;
@@ -67,6 +70,20 @@ public class CommonTools {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 获得屏幕高度
+     *
+     * @param context
+     * @return
+     */
+    public static int getScreenWidth(Context context) {
+        WindowManager wm = (WindowManager) context
+                .getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(outMetrics);
+        return outMetrics.widthPixels;
     }
 
     /**
@@ -182,6 +199,7 @@ public class CommonTools {
      *
      * */
     public static Bitmap fitSizeImg(Resources res, int drawableId, int inSampleSize) {
+
         if (drawableId == 0)
             return null;
         Bitmap resizeBmp = null;
@@ -202,42 +220,24 @@ public class CommonTools {
      * 将图片转换成Base64
      */
     public static String bitMapToString(Bitmap bitmap) {
-        String result = null;
-        ByteArrayOutputStream baos = null;
-
+        bitmap = zoomImage(bitmap, 800, 480);
         try {
-            if (bitmap != null) {
-                baos = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                int options = 100;
-//        int options = 100;
-                while (baos.toByteArray().length / 1024 > 100) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
-                    baos.reset();//重置baos即清空baos
-                    //第一个参数 ：图片格式 ，第二个参数： 图片质量，100为最高，0为最差  ，第三个参数：保存压缩后的数据的流
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, options, baos);
-                    //这里压缩options%，把压缩后的数据存放到baos中
-                    options -= 10;//每次都减少10
-                }
-                baos.flush();
-                baos.close();
-
-                byte[] bitmapBytes = baos.toByteArray();
-
-                result = Base64.encodeToString(bitmapBytes, Base64.DEFAULT);
-            }
-        } catch (IOException e) {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            // 设置位图的压缩格式，质量为100%，并放入字节数组输出流中
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            baos.flush();
+            baos.close();
+            // 将字节数组输出流转化为字节数组byte[]
+            byte[] imagedata = baos.toByteArray();
+//    String iconString2=new String(imagedata);
+//    result = Base64.encodeToString(imagedata, Base64.DEFAULT);
+            String iconString = Base64.encodeToString(imagedata, Base64.DEFAULT);
+            return iconString;
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (baos != null) {
-                    baos.flush();
-                    baos.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
-        return result;
+        return null;
+
     }
 
 
@@ -272,11 +272,9 @@ public class CommonTools {
 
         Bitmap bitmap = null;
         try {
-            byte[] bytes = Base64.decode(string, Base64.DEFAULT);
-//
-//      byte[] bitmapArray;
-//      bitmapArray = Base64.decode(string);
-            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+            byte[] bitmapArray;
+            bitmapArray = Base64.decode(string, Base64.DEFAULT);
+            bitmap = BitmapFactory.decodeByteArray(bitmapArray, 0, bitmapArray.length);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -295,109 +293,8 @@ public class CommonTools {
     }
 
     /**
-     * 验证email格式
-     */
-    public static boolean isEmailFormat(String line) {
-        Pattern p = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
-        Matcher m = p.matcher(line);
-        return m.find();
-
-    }
-
-    public static int getVersionCode(Context context)// 获取版本号(内部识别号)
-    {
-        try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo(context.getPackageName(),
-                    0);
-            return pi.versionCode;
-        } catch (NameNotFoundException e) {
-            e.printStackTrace();
-            return 0;
-        }
-    }
-
-    /**
-     * 获取手机版本号
-     *
-     * @param context
-     * @return String
-     * @Title: getVersionName
-     * @author renxh
-     * @since 2015-10-22 V 1.0
-     */
-    public static String getVersionName(Context context)// 获取版本号
-    {
-        try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo(context.getPackageName(),
-                    0);
-            return pi.versionName;
-        } catch (NameNotFoundException e) {
-            e.printStackTrace();
-            return "1";
-        }
-    }
-
-    /**
-     * 半角转换为全角
-     *
-     * @param input
-     * @return
-     */
-    public static String ToDBC(String input) {
-        if (input == null) {
-            return "";
-        }
-        char[] c = input.toCharArray();
-        for (int i = 0; i < c.length; i++) {
-            if (c[i] == 12288) {
-                c[i] = (char) 32;
-                continue;
-            }
-            if (c[i] > 65280 && c[i] < 65375)
-                c[i] = (char) (c[i] - 65248);
-        }
-        return new String(c);
-    }
-
-    public static String getBase64(Context context, Uri uri)
-            throws FileNotFoundException, IOException {
-        Bitmap photoBig = getThumbnailByLimitSize(context, uri,
-                1024 * 1024);
-        photoBig = rotaingImageView(90, photoBig);
-        String mImgThString = bitMapToString(photoBig);
-        photoBig.recycle();
-        return mImgThString;
-    }
-
-    public static String getBase64(Context context, Uri uri, String filepath)
-            throws FileNotFoundException, IOException {
-        Bitmap photoBig = getThumbnailByLimitSize(context, uri,
-                2 * 1024 * 1024);
-        int angle = readPictureDegree(filepath);
-        photoBig = rotaingImageView(angle, photoBig);
-        String mImgThString = bitMapToString(photoBig);
-        photoBig.recycle();
-        return mImgThString;
-    }
-    public static String getBase64(Context context, Uri uri, String filepath, int limitSize)
-            throws FileNotFoundException, IOException {
-        String mImgThString="";
-        if(uri!=null) {
-            Bitmap photoBig = getThumbnailByLimitSize(context, uri,
-                    limitSize);
-            int angle = 0;
-            if (!TextUtils.isEmpty(filepath)) {
-                angle = readPictureDegree(filepath);
-            }
-            photoBig = rotaingImageView(angle, photoBig);
-            mImgThString= bitmapToBase64(photoBig);
-            photoBig.recycle();
-        }
-        return mImgThString;
-    }
-
-    /**
      * bitmap转为base64
+     *
      * @param bitmap
      * @return
      */
@@ -432,132 +329,66 @@ public class CommonTools {
     }
 
     /**
-     * 压缩图片
+     * 验证email格式
+     */
+    public static boolean isEmailFormat(String line) {
+        Pattern p = Pattern.compile("\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*");
+        Matcher m = p.matcher(line);
+        return m.find();
+
+    }
+
+    public static int getVersionCode(Context context)// 获取版本号(内部识别号)
+    {
+        try {
+            PackageInfo pi = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return pi.versionCode;
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    /**
+     * 获取手机版本号
      *
      * @param context
-     * @param uri
-     * @param limitSize
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
+     * @return String
+     * @Title: getVersionName
+     * @author renxh
+     * @since 2015-10-22 V 1.0
      */
-    public static Bitmap getThumbnailByLimitSize(Context context, Uri uri, int limitSize)
-            throws FileNotFoundException, IOException {
-        InputStream input = context.getContentResolver().openInputStream(uri);
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(input, null, bmOptions);
-        int originalSize = bmOptions.outWidth * bmOptions.outHeight;//
-        int scale = 1;
-        if (originalSize > limitSize && limitSize > 0) {
-            scale = originalSize % limitSize == 0 ? originalSize / limitSize : originalSize /
-                    limitSize + 1;
+    public static String getVersionName(Context context)// 获取版本号
+    {
+        try {
+            PackageInfo pi = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return pi.versionName;
+        } catch (NameNotFoundException e) {
+            e.printStackTrace();
+            return "1";
         }
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scale;
-        input = context.getContentResolver().openInputStream(uri);
-        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bmOptions);
-        input.close();
-        return bitmap;
-    }
-
-    /*
-             * 旋转图片
-             *
-             * @param angle
-             *
-             * @param bitmap
-             *
-             * @return Bitmap
-             */
-    public static Bitmap rotaingImageView(int angle, Bitmap bitmap) {
-        // 旋转图片 动作
-        Matrix matrix = new Matrix();
-        ;
-        matrix.postRotate(angle);
-        System.out.println("angle2=" + angle);
-        // 创建新的图片
-        Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0,
-                bitmap.getWidth(), bitmap.getHeight(), matrix, true);
-        return resizedBitmap;
     }
 
     /**
-     * 读取照片旋转角度
+     * 半角转换为全角
      *
-     * @param path 照片路径
-     * @return 角度
-     */
-    public static int readPictureDegree(String path) {
-        int degree = 0;
-        try {
-            ExifInterface exifInterface = new ExifInterface(path);
-            int orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                    ExifInterface.ORIENTATION_NORMAL);
-            switch (orientation) {
-                case ExifInterface.ORIENTATION_ROTATE_90:
-                    degree = 90;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_180:
-                    degree = 180;
-                    break;
-                case ExifInterface.ORIENTATION_ROTATE_270:
-                    degree = 270;
-                    break;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return degree;
-    }
-
-
-    /**
-     * 日期转星期
-     *
-     * @param datetime
+     * @param input
      * @return
      */
-    public static String dateToWeek(String datetime) {
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd");
-        String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
-        Calendar cal = Calendar.getInstance(); // 获得一个日历
-        Date datet = null;
-        try {
-            datet = f.parse(datetime);
-            cal.setTime(datet);
-        } catch (ParseException e) {
-            e.printStackTrace();
+    public static String ToDBC(String input) {
+        if (input == null) {
+            return "";
         }
-        int w = cal.get(Calendar.DAY_OF_WEEK) - 1; // 指示一个星期中的某天。
-        if (w < 0)
-            w = 0;
-        return weekDays[w];
-    }
-
-    //压缩图片尺寸
-    public static Bitmap compressBySize(String pathName) {
-        BitmapFactory.Options opts = new BitmapFactory.Options();
-        opts.inJustDecodeBounds = true;// 不去真的解析图片，只是获取图片的头部信息，包含宽高等；
-        Bitmap bitmap = BitmapFactory.decodeFile(pathName, opts);
-        // 得到图片的宽度、高度；
-        float imgWidth = opts.outWidth;
-        float imgHeight = opts.outHeight;
-        // 分别计算图片宽度、高度与目标宽度、高度的比例；取大于等于该比例的最小整数；
-        int widthRatio = (int) Math.ceil(imgWidth / (float) 300);
-        int heightRatio = (int) Math.ceil(imgHeight / (float) 300);
-        opts.inSampleSize = 1;
-        if (widthRatio > 1 || widthRatio > 1) {
-            if (widthRatio > heightRatio) {
-                opts.inSampleSize = widthRatio;
-            } else {
-                opts.inSampleSize = heightRatio;
+        char[] c = input.toCharArray();
+        for (int i = 0; i < c.length; i++) {
+            if (c[i] == 12288) {
+                c[i] = (char) 32;
+                continue;
             }
+            if (c[i] > 65280 && c[i] < 65375)
+                c[i] = (char) (c[i] - 65248);
         }
-        //设置好缩放比例后，加载图片进内容；
-        opts.inJustDecodeBounds = false;
-        bitmap = BitmapFactory.decodeFile(pathName, opts);
-        return bitmap;
+        return new String(c);
     }
 
     /**
@@ -575,98 +406,245 @@ public class CommonTools {
         else return mobiles.matches(regExp);
     }
 
-    //  compressImage    /**
-//   * 通过uri获取图片并进行压缩
-//   *
-//   * @param uri
-//   */
-    public static Bitmap getBitmapFormUri(Activity ac, Uri uri) throws FileNotFoundException,
-            IOException {
-        InputStream input = ac.getContentResolver().openInputStream(uri);
-        BitmapFactory.Options onlyBoundsOptions = new BitmapFactory.Options();
-        onlyBoundsOptions.inJustDecodeBounds = true;
-        onlyBoundsOptions.inDither = true;//optional
-        onlyBoundsOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//optional
-        BitmapFactory.decodeStream(input, null, onlyBoundsOptions);
-        input.close();
-        int originalWidth = onlyBoundsOptions.outWidth;
-        int originalHeight = onlyBoundsOptions.outHeight;
-        if ((originalWidth == -1) || (originalHeight == -1))
-            return null;
-        //图片分辨率以480x800为标准
-        float hh = 800f;//这里设置高度为800f
-        float ww = 480f;//这里设置宽度为480f
-        //缩放比。由于是固定比例缩放，只用高或者宽其中一个数据进行计算即可
-        int be = 1;//be=1表示不缩放
-        if (originalWidth > originalHeight && originalWidth > ww) {//如果宽度大的话根据宽度固定大小缩放
-            be = (int) (originalWidth / ww);
-        } else if (originalWidth < originalHeight && originalHeight > hh) {//如果高度高的话根据宽度固定大小缩放
-            be = (int) (originalHeight / hh);
+    //1048576
+    public static String getBase64(Context context, Uri uri, String filepath, int limitSize)
+            throws FileNotFoundException, IOException {
+        String mImgThString = "";
+        if (uri != null) {
+            Bitmap photoBig = BitmapAsset.getThumbnailByLimitSize(context, uri,
+                    limitSize);
+            int angle = 0;
+            if (!TextUtils.isEmpty(filepath)) {
+                angle = BitmapAsset.readPictureDegree(filepath);
+            }
+            photoBig = BitmapAsset.rotaingImageView(angle, photoBig);
+            mImgThString = bitmapToBase64(photoBig);
+            photoBig.recycle();
         }
-        if (be <= 0)
-            be = 1;
-        //比例压缩
-        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
-        bitmapOptions.inSampleSize = be;//设置缩放比例
-        bitmapOptions.inDither = true;//optional
-        bitmapOptions.inPreferredConfig = Bitmap.Config.ARGB_8888;//optional
-        input = ac.getContentResolver().openInputStream(uri);
-        Bitmap bitmap = BitmapFactory.decodeStream(input, null, bitmapOptions);
-        input.close();
-
-        return compressImage(bitmap);//再进行质量压缩
-    }
-
-    /**
-     * 质量压缩方法
-     *
-     * @param image
-     * @return
-     */
-    public static Bitmap compressImage(Bitmap image) {
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        image.compress(Bitmap.CompressFormat.JPEG, 100, baos);//质量压缩方法，这里100表示不压缩，把压缩后的数据存放到baos中
-        int options = 100;
-        while (baos.toByteArray().length / 1024 > 100) {  //循环判断如果压缩后图片是否大于100kb,大于继续压缩
-            baos.reset();//重置baos即清空baos
-            //第一个参数 ：图片格式 ，第二个参数： 图片质量，100为最高，0为最差  ，第三个参数：保存压缩后的数据的流
-            image.compress(Bitmap.CompressFormat.JPEG, options, baos);//这里压缩options%，把压缩后的数据存放到baos中
-            options -= 10;//每次都减少10
-        }
-        ByteArrayInputStream isBm = new ByteArrayInputStream(baos.toByteArray());//把压缩后的数据baos存放到ByteArrayInputStream中
-        Bitmap bitmap = BitmapFactory.decodeStream(isBm, null, null);//把ByteArrayInputStream数据生成图片
-        return bitmap;
+        return mImgThString;
     }
 
 
     /**
-     * 获得屏幕高度
+     * 根据Uri的不同Scheme解析出在本机的路径
      *
      * @param context
-     * @return
+     * @param uri
+     * @return Uri的真实路径
      */
-    public static int getScreenWidth(Context context) {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(outMetrics);
-        return outMetrics.widthPixels;
+    @TargetApi(19)
+    public static String formatUri(Context context, Uri uri) {
+        final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
+        // DocumentProvider
+        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+            // ExternalStorageProvider
+            if (isExternalStorageDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                if ("primary".equalsIgnoreCase(type)) {
+                    return Environment.getExternalStorageDirectory() + "/"
+                            + split[1];
+                }
+
+                // TODO handle non-primary volumes
+            }
+            // DownloadsProvider
+            else if (isDownloadsDocument(uri)) {
+                final String id = DocumentsContract.getDocumentId(uri);
+                final Uri contentUri = ContentUris.withAppendedId(
+                        Uri.parse("content://downloads/public_downloads"),
+                        Long.valueOf(id));
+
+                return getDataColumn(context, contentUri, null, null);
+            }
+            // MediaProvider
+            else if (isMediaDocument(uri)) {
+                final String docId = DocumentsContract.getDocumentId(uri);
+                final String[] split = docId.split(":");
+                final String type = split[0];
+
+                Uri contentUri = null;
+                if ("image".equals(type)) {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+                } else if ("video".equals(type)) {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                } else if ("audio".equals(type)) {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                }
+
+                final String selection = "_id=?";
+                final String[] selectionArgs = new String[]{split[1]};
+
+                return getDataColumn(context, contentUri, selection,
+                        selectionArgs);
+            }
+        }
+        // MediaStore (and general)
+        else if ("content".equalsIgnoreCase(uri.getScheme())) {
+
+            // Return the remote address
+            if (isGooglePhotosUri(uri))
+                return uri.getLastPathSegment();
+
+            return getDataColumn(context, uri, null, null);
+        }
+        // File
+        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+            return uri.getPath();
+        }
+
+        return null;
+    }
+
+    public static String getDataColumn(Context context, Uri uri, String selection,
+                                       String[] selectionArgs) {
+
+        Cursor cursor = null;
+        final String column = "_data";
+        final String[] projection = {column};
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection,
+                    selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                final int index = cursor.getColumnIndexOrThrow(column);
+                return cursor.getString(index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
     }
 
     /**
-     * 获得屏幕宽度
-     *
-     * @param context
-     * @return
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is ExternalStorageProvider.
      */
-    public static int getScreenHeight(Context context) {
-        WindowManager wm = (WindowManager) context
-                .getSystemService(Context.WINDOW_SERVICE);
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(outMetrics);
-        return outMetrics.heightPixels;
+    public static boolean isExternalStorageDocument(Uri uri) {
+        return "com.android.externalstorage.documents".equals(uri
+                .getAuthority());
     }
 
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is DownloadsProvider.
+     */
+    public static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri
+                .getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is MediaProvider.
+     */
+    public static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri
+                .getAuthority());
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri authority is Google Photos.
+     */
+    public static boolean isGooglePhotosUri(Uri uri) {
+        return "com.google.android.apps.photos.content".equals(uri
+                .getAuthority());
+    }
+
+
+    /**
+     * 判断是否是车牌号
+     */
+    public static boolean isCarNo(String CarNum) {
+        //匹配第一位汉字
+        String str = "京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼甲乙丙己庚辛壬寅辰戍午未申";
+        if (!(CarNum == null || CarNum.equals(""))) {
+            String s1 = CarNum.substring(0, 1);//获取字符串的第一个字符
+            if (str.contains(s1)) {
+                String s2 = CarNum.substring(1, CarNum.length());
+                //不包含I O i o的判断
+                if (s2.contains("I") || s2.contains("i") || s2.contains("O") || s2.contains("o")) {
+                    return false;
+                } else {
+                    if (!CarNum.matches("^[\u4e00-\u9fa5]{1}[A-Z]{1}[A-Z_0-9]{5}$")) {
+                        return true;
+                    }
+                }
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+        return false;
+    }
+
+
+    public static boolean isCarNo1(String carNo) {
+        Pattern p = Pattern.compile("^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}(?:(?![A-Z]{4})[A-Z0-9]){4}[A-Z0-9挂学警港澳]{1}$");
+        Matcher m = p.matcher(carNo);
+        if (!m.matches()) {
+            return false;
+        }
+        return true;
+
+    }
+
+    //手机号
+
+    public static boolean isChinaPhoneLegal(String str)
+            throws PatternSyntaxException {
+        String regExp = "^((13[0-9])|(15[0-9])|(18[0-9])|(17[0-9])|(147,145))\\d{8}$";
+        Pattern p = Pattern.compile(regExp);
+        Matcher m = p.matcher(str);
+        return m.matches();
+    }
+
+
+    public static boolean isCarnumberNO(String carnumber) {
+        String carnumRegex = "([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}(([0-9]{5}[DF])|([DF]([A-HJ-NP-Z0-9])[0-9]{4})))|([京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-HJ-NP-Z0-9]{4}[A-HJ-NP-Z0-9挂学警港澳]{1})";
+
+        if (TextUtils.isEmpty(carnumber)) return false;
+        else return carnumber.matches(carnumRegex);
+    }
+
+    public static String ArrayToString(List<String> list, String separator) {
+        String result = "";
+        for (String s : list) {
+            result += s + ",";
+        }
+        result = result.length() <= 0 ? "" : result.substring(0, result.length() - 1);
+        return result;
+    }
+    public static Drawable chageColor(Drawable drawable, int color){
+        Drawable tintIcon= DrawableCompat.wrap(drawable);
+        DrawableCompat.setTint(tintIcon,color);
+        return tintIcon;
+    }
+
+    /**
+     * 使用 Map按key进行排序
+     * @param map
+     * @return
+     */
+//    public static Map<Object, Object> sortMapByKey(Map<Object, Object> map) {
+//        if (map == null || map.isEmpty()) {
+//            return null;
+//        }
+////        Map<Object, Object> sortMap = new TreeMap<Object, Object>(new Comparator<String>(){
+////            public int compare(String str1,String str2){
+////                int i = str1.compareTo(str2);
+////                return i;
+////            }
+////        });
+////        sortMap.putAll(map);
+//        return sortMap;
+//    }
 
 }
+
+
