@@ -1,10 +1,15 @@
 package com.fk.mycollection.bean;
 
 
+import io.objectbox.annotation.Entity;
+import io.objectbox.annotation.Id;
+
 /**
  * Created by Administrator on 2017/5/15.
  */
+@Entity
 public class UserBean {
+    @Id
     private Long id;
     private String userId;
     private String userName;//账号

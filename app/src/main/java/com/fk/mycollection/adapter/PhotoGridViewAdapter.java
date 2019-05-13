@@ -40,7 +40,6 @@ public class PhotoGridViewAdapter extends RecyclerView.Adapter<PhotoGridViewAdap
         this.photoListener = photoListener;
         this.deleteListener = deleteListener;
         int screenWidth = CommonTools.getScreenWidth(context);
-        int screenHeight = CommonTools.getScreenHeight(context);
         width = (screenWidth - 60) / 4;
         height = width;
         photoList = new LinkedList<>();

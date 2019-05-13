@@ -13,6 +13,7 @@ import com.fk.mycollection.UI.BitmapGestureActivity;
 import com.fk.mycollection.UI.DrawerActivity;
 import com.fk.mycollection.UI.GlideProgressActivity;
 import com.fk.mycollection.UI.MutiPhotoSelectActivity;
+import com.fk.mycollection.UI.ObjectboxTestActivity;
 import com.fk.mycollection.UI.PopupWindowActivity;
 import com.fk.mycollection.UI.ProgressWebViewActivity;
 import com.fk.mycollection.UI.RatingBarActivity;
@@ -159,6 +160,12 @@ public class MainActivity extends AppCompatActivity {
         map=new HashMap<>();
         map.put("name", "抽屉导航");
         map.put("class", DrawerActivity.class);
+        list.add(map);
+
+        //DrawerActivity
+        map=new HashMap<>();
+        map.put("name", "数据库");
+        map.put("class", ObjectboxTestActivity.class);
         list.add(map);
 
         return list;
