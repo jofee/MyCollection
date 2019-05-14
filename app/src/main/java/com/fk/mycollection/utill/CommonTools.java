@@ -25,6 +25,10 @@ import android.view.WindowManager;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
+import com.fk.mycollection.bean.BaseBean;
+import com.fk.mycollection.bean.UserBean;
+import com.google.gson.Gson;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -620,14 +624,16 @@ public class CommonTools {
         result = result.length() <= 0 ? "" : result.substring(0, result.length() - 1);
         return result;
     }
-    public static Drawable chageColor(Drawable drawable, int color){
-        Drawable tintIcon= DrawableCompat.wrap(drawable);
-        DrawableCompat.setTint(tintIcon,color);
+
+    public static Drawable chageColor(Drawable drawable, int color) {
+        Drawable tintIcon = DrawableCompat.wrap(drawable);
+        DrawableCompat.setTint(tintIcon, color);
         return tintIcon;
     }
 
     /**
      * 使用 Map按key进行排序
+     *
      * @param map
      * @return
      */
@@ -644,6 +650,15 @@ public class CommonTools {
 ////        sortMap.putAll(map);
 //        return sortMap;
 //    }
+    public static <T> String dataToJson(int code, String error, T data) {
+        BaseBean<T> result = new BaseBean<>();
+        result.setCode(code);
+        result.setError(error);
+        result.setData(data);
+        Gson gson = new Gson();
+        String jsonResult = gson.toJson(result);
+        return jsonResult;
+    }
 
 }
 

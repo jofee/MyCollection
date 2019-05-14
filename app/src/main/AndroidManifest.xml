@@ -14,7 +14,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".UI.ObjectboxTestActivity"></activity>
+        <activity android:name=".UI.GsonTestActivity"></activity>
+        <activity android:name=".UI.RetrofitTestActivity" />
+        <activity android:name=".BaseActivity" />
+        <activity android:name=".UI.ObjectboxTestActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,14 +27,14 @@
         </activity>
         <activity android:name=".UI.GlideProgressActivity" />
         <activity android:name=".UI.RuntimePermissionActivity" />
-        <activity android:name=".UI.ScrollListViewActivity"></activity>
-        <activity android:name=".UI.DownloadProgressActivity"></activity>
-        <activity android:name=".UI.BitmapGestureActivity"></activity>
-        <activity android:name=".UI.BannerActivity"></activity>
-        <activity android:name=".UI.SimpleDateSelectActivity"></activity>
-        <activity android:name=".UI.ProgressWebViewActivity"></activity>
-        <activity android:name=".UI.PopupWindowActivity"></activity>
-        <activity android:name=".UI.MutiPhotoSelectActivity"></activity>
+        <activity android:name=".UI.ScrollListViewActivity" />
+        <activity android:name=".UI.DownloadProgressActivity" />
+        <activity android:name=".UI.BitmapGestureActivity" />
+        <activity android:name=".UI.BannerActivity" />
+        <activity android:name=".UI.SimpleDateSelectActivity" />
+        <activity android:name=".UI.ProgressWebViewActivity" />
+        <activity android:name=".UI.PopupWindowActivity" />
+        <activity android:name=".UI.MutiPhotoSelectActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -43,13 +46,13 @@
                 android:resource="@xml/provider_path" />
         </provider>
 
-        <activity android:name=".UI.TabActivity"></activity>
-        <activity android:name=".UI.RatingBarActivity"></activity>
+        <activity android:name=".UI.TabActivity" />
+        <activity android:name=".UI.RatingBarActivity" />
         <activity
             android:name=".UI.DrawerActivity"
             android:label="@string/title_activity_drawer"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".UI.CustomViewActivity"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".UI.CustomViewActivity" />
     </application>
 
 </manifest>

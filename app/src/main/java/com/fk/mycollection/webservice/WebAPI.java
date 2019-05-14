@@ -15,7 +15,7 @@ public interface WebAPI {
     // 登录接口
     @FormUrlEncoded
     @POST("user!login.action")
-    Call<BaseBean<UserBean, Object>> login(@FieldMap Map<String, String> params);
+    Call<BaseBean<UserBean>> login(@FieldMap Map<String, String> params);
 
 }
 

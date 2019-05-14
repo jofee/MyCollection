@@ -12,11 +12,13 @@ import com.fk.mycollection.UI.BannerActivity;
 import com.fk.mycollection.UI.BitmapGestureActivity;
 import com.fk.mycollection.UI.DrawerActivity;
 import com.fk.mycollection.UI.GlideProgressActivity;
+import com.fk.mycollection.UI.GsonTestActivity;
 import com.fk.mycollection.UI.MutiPhotoSelectActivity;
 import com.fk.mycollection.UI.ObjectboxTestActivity;
 import com.fk.mycollection.UI.PopupWindowActivity;
 import com.fk.mycollection.UI.ProgressWebViewActivity;
 import com.fk.mycollection.UI.RatingBarActivity;
+import com.fk.mycollection.UI.RetrofitTestActivity;
 import com.fk.mycollection.UI.ScrollListViewActivity;
 import com.fk.mycollection.UI.SimpleDateSelectActivity;
 import com.fk.mycollection.UI.TabActivity;
@@ -95,77 +97,88 @@ public class MainActivity extends AppCompatActivity {
 //        list.add(map);
 
 
-
         //图片下载进度
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "图片下载进度");
         map.put("class", GlideProgressActivity.class);
         list.add(map);
 
         //嵌套scrollview
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "嵌套scrollview");
         map.put("class", ScrollListViewActivity.class);
         list.add(map);
 
         //图片旋转
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "图片旋转");
         map.put("class", BitmapGestureActivity.class);
         list.add(map);
 
         //轮播
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "轮播");
         map.put("class", BannerActivity.class);
         list.add(map);
 
         //简单日期选择
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "简单日期选择");
         map.put("class", SimpleDateSelectActivity.class);
         list.add(map);
 
         //带进度条的webview
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "带进度条的webview");
         map.put("class", ProgressWebViewActivity.class);
         list.add(map);
 
         //popupwindow
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "popupwindow");
         map.put("class", PopupWindowActivity.class);
         list.add(map);
 
         //popupwindow
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "图片选择多选");
         map.put("class", MutiPhotoSelectActivity.class);
         list.add(map);
 
         //TabLayout
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "TabLayout");
         map.put("class", TabActivity.class);
         list.add(map);
 
         //RatingBar
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "评分");
         map.put("class", RatingBarActivity.class);
         list.add(map);
 
         //DrawerActivity
-        map=new HashMap<>();
+        map = new HashMap<>();
         map.put("name", "抽屉导航");
         map.put("class", DrawerActivity.class);
         list.add(map);
 
-        //DrawerActivity
-        map=new HashMap<>();
+        //ObjectboxTestActivity
+        map = new HashMap<>();
         map.put("name", "数据库");
         map.put("class", ObjectboxTestActivity.class);
+        list.add(map);
+
+        //RetrofitTestActivity
+        map = new HashMap<>();
+        map.put("name", "Retrofit");
+        map.put("class", RetrofitTestActivity.class);
+        list.add(map);
+
+        //GsonTestActivity
+        map = new HashMap<>();
+        map.put("name", "Gson");
+        map.put("class", GsonTestActivity.class);
         list.add(map);
 
         return list;

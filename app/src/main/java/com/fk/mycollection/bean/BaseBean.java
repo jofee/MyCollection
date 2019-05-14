@@ -1,20 +1,18 @@
 package com.fk.mycollection.bean;
 
 
-public class BaseBean<T,V> {
+public class BaseBean<T> {
 
-    private int result;
+    private int code;
     private String error;
     private T data;
-    private int total;
-    private V extend;
 
-    public int getResult() {
-        return result;
+    public int getCode() {
+        return code;
     }
 
-    public void setResult(int result) {
-        this.result = result;
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public String getError() {
@@ -33,19 +31,4 @@ public class BaseBean<T,V> {
         this.data = data;
     }
 
-    public int getTotal() {
-        return total;
-    }
-
-    public void setTotal(int total) {
-        this.total = total;
-    }
-
-    public V getExtend() {
-        return extend;
-    }
-
-    public void setExtend(V extend) {
-        this.extend = extend;
-    }
 }
